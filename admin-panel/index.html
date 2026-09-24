@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Upnode Admin — Control Panel</title>
+
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide icons -->
+    <script src="https://unpkg.com/lucide/dist/lucide.min.js"></script>
+    <style>
+      html,body,#app{height:100%}
+    </style>
+  </head>
+  <body class="bg-gray-50 text-gray-800">
+    <div id="app" class="min-h-screen flex">
+      <!-- Sidebar -->
+      <aside class="w-72 bg-white border-r hidden md:block">
+        <div class="p-6 border-b">
+          <h1 class="text-2xl font-bold">Upnode Admin</h1>
+          <p class="text-sm text-gray-500 mt-1">Control Panel — Harare</p>
+        </div>
+        <nav class="p-4">
+          <ul class="space-y-2">
+            <li><button data-target="schools" class="nav-btn w-full text-left px-3 py-2 rounded hover:bg-gray-100">Schools Management</button></li>
+            <li><button data-target="payments" class="nav-btn w-full text-left px-3 py-2 rounded hover:bg-gray-100">EcoCash Manual Verifications</button></li>
+            <li><button data-target="teachers" class="nav-btn w-full text-left px-3 py-2 rounded hover:bg-gray-100">Teacher Work Audits</button></li>
+            <li><button data-target="students" class="nav-btn w-full text-left px-3 py-2 rounded hover:bg-gray-100">Student Inspection</button></li>
+          </ul>
+        </nav>
+      </aside>
+
+      <!-- Main -->
+      <main class="flex-1 p-6">
+        <header class="flex items-center justify-between mb-6">
+          <div>
+            <h2 class="text-lg font-semibold">Dashboard</h2>
+            <p class="text-sm text-gray-500">Overview of schools, payments and audits</p>
+          </div>
+          <div class="flex items-center gap-4">
+            <button id="refreshBtn" class="px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Refresh</button>
+            <div class="text-sm text-gray-600">Signed in as <strong>founder@upnode.co.zw</strong></div>
+          </div>
+        </header>
+
+        <!-- Views container -->
+        <section id="views">
+          <!-- Schools Management -->
+          <div id="schools" class="view">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+              <div class="p-4 bg-white rounded shadow-sm">
+                <div class="text-xs text-gray-500">Total Schools</div>
+                <div id="totalSchools" class="text-2xl font-bold">—</div>
+              </div>
+              <div class="p-4 bg-white rounded shadow-sm">
+                <div class="text-xs text-gray-500">Schools in Grace</div>
+                <div id="graceSchools" class="text-2xl font-bold">—</div>
+              </div>
+              <div class="p-4 bg-white rounded shadow-sm">
+                <div class="text-xs text-gray-500">Schools in Enrollment Only</div>
+                <div id="enrollOnly" class="text-2xl font-bold">—</div>
+              </div>
+            </div>
+
+            <div class="bg-white rounded shadow overflow-auto">
+              <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                  <tr>
+                    <th class="p-3 text-left text-xs font-medium text-gray-500">School</th>
+                    <th class="p-3 text-left text-xs font-medium text-gray-500">Tier</th>
+                    <th class="p-3 text-left text-xs font-medium text-gray-500">Queries</th>
+                    <th class="p-3 text-left text-xs font-medium text-gray-500">Media</th>
+                    <th class="p-3 text-left text-xs font-medium text-gray-500">Expiry</th>
+                    <th class="p-3 text-left text-xs font-medium text-gray-500">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="schoolsTable" class="bg-white divide-y divide-gray-100">
+                  <tr><td class="p-4 text-sm text-gray-500" colspan="6">No data loaded.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- EcoCash Manual Verifications -->
+          <div id="payments" class="view hidden">
+            <h3 class="text-lg font-medium mb-3">Pending Manual Transfers</h3>
+            <div class="bg-white rounded shadow overflow-auto">
+              <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                  <tr>
+                    <th class="p-3 text-left text-xs font-medium text-gray-500">Reference</th>
+                    <th class="p-3 text-left text-xs font-medium text-gray-500">School</th>
+                    <th class="p-3 text-left text-xs font-medium text-gray-500">Amount</th>
+                    <th class="p-3 text-left text-xs font-medium text-gray-500">Received At</th>
+                    <th class="p-3 text-left text-xs font-medium text-gray-500">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="paymentsTable" class="bg-white divide-y divide-gray-100">
+                  <tr><td class="p-4 text-sm text-gray-500" colspan="5">No pending transfers.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Teacher Work Audits -->
+          <div id="teachers" class="view hidden">
+            <h3 class="text-lg font-medium mb-3">Pending Teacher Drafts</h3>
+            <div class="bg-white rounded shadow overflow-auto">
+              <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                  <tr>
+                    <th class="p-3 text-left text-xs font-medium text-gray-500">Teacher</th>
+                    <th class="p-3 text-left text-xs font-medium text-gray-500">School</th>
+                    <th class="p-3 text-left text-xs font-medium text-gray-500">Submitted</th>
+                    <th class="p-3 text-left text-xs font-medium text-gray-500">Preview</th>
+                    <th class="p-3 text-left text-xs font-medium text-gray-500">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="teachersTable" class="bg-white divide-y divide-gray-100">
+                  <tr><td class="p-4 text-sm text-gray-500" colspan="5">No pending drafts.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Student Inspection -->
+          <div id="students" class="view hidden">
+            <h3 class="text-lg font-medium mb-3">Student Inspection</h3>
+            <div class="mb-4 grid grid-cols-1 md:grid-cols-3 gap-3">
+              <select id="schoolSelect" class="p-2 border rounded">
+                <option value="">Select school...</option>
+              </select>
+              <input id="studentQuery" class="p-2 border rounded" placeholder="Student ID or phone" />
+              <button id="lookupBtn" class="px-4 py-2 bg-green-600 text-white rounded">Lookup</button>
+            </div>
+
+            <div id="studentCard" class="bg-white p-4 rounded shadow hidden">
+              <div class="flex items-center gap-4 mb-3">
+                <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">👤</div>
+                <div>
+                  <div id="studentName" class="text-lg font-semibold">—</div>
+                  <div id="studentMeta" class="text-sm text-gray-500">—</div>
+                </div>
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div>
+                  <div class="text-xs text-gray-500">Balance</div>
+                  <div id="studentBalance" class="text-xl font-bold">—</div>
+                </div>
+                <div>
+                  <div class="text-xs text-gray-500">Class</div>
+                  <div id="studentClass" class="text-lg">—</div>
+                </div>
+                <div>
+                  <div class="text-xs text-gray-500">Parent Phone</div>
+                  <div id="studentPhone" class="text-lg">—</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script>
+      // Simple view router
+      function showView(id) {
+        document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
+        const el = document.getElementById(id);
+        if (el) el.classList.remove('hidden');
+      }
+
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => showView(btn.dataset.target));
+      });
+
+      document.getElementById('refreshBtn').addEventListener('click', () => loadAll());
+
+      // Placeholder loaders — adapt endpoints in server
+      async function fetchJson(path) {
+        try {
+          const r = await fetch(path);
+          if (!r.ok) throw new Error('Fetch failed');
+          return await r.json();
+        } catch (err) {
+          console.warn('fetchJson', path, err.message || err);
+          return null;
+        }
+      }
+
+      async function loadSchools() {
+        const out = document.getElementById('schoolsTable');
+        out.innerHTML = '<tr><td class="p-4 text-sm text-gray-500" colspan="6">Loading…</td></tr>';
+        const data = await fetchJson('/admin/api/schools');
+        if (!data || !Array.isArray(data)) {
+          out.innerHTML = '<tr><td class="p-4 text-sm text-gray-500" colspan="6">Failed to load.</td></tr>';
+          return;
+        }
+        document.getElementById('totalSchools').textContent = data.length;
+        document.getElementById('graceSchools').textContent = data.filter(s=>s.in_grace).length || 0;
+        document.getElementById('enrollOnly').textContent = data.filter(s=>s.tier==='enrollment_only').length || 0;
+        out.innerHTML = data.map(s => `
+          <tr>
+            <td class="p-3 text-sm font-medium">${s.name}</td>
+            <td class="p-3 text-sm">${s.tier}</td>
+            <td class="p-3 text-sm">${s.queries_used_this_month||0}</td>
+            <td class="p-3 text-sm">${s.media_used_this_month||0}</td>
+            <td class="p-3 text-sm">${s.expiry_date? new Date(s.expiry_date).toLocaleDateString() : '—'}</td>
+            <td class="p-3 text-sm"><button data-id="${s.id}" class="confirm-activate px-2 py-1 bg-yellow-500 text-white rounded">Force Activate</button></td>
+          </tr>
+        `).join('');
+
+        document.querySelectorAll('.confirm-activate').forEach(b => b.addEventListener('click', async e=>{
+          const id = b.dataset.id;
+          if (!confirm('Force activate this school?')) return;
+          await fetch('/admin/api/schools/'+id+'/activate', { method: 'POST' });
+          loadAll();
+        }));
+      }
+
+      async function loadPayments() {
+        const out = document.getElementById('paymentsTable');
+        out.innerHTML = '<tr><td class="p-4 text-sm text-gray-500" colspan="5">Loading…</td></tr>';
+        const data = await fetchJson('/admin/api/payments/pending');
+        if (!data || !Array.isArray(data)) {
+          out.innerHTML = '<tr><td class="p-4 text-sm text-gray-500" colspan="5">Failed to load.</td></tr>';
+          return;
+        }
+        out.innerHTML = data.map(p=>`
+          <tr>
+            <td class="p-3 text-sm">${p.reference}</td>
+            <td class="p-3 text-sm">${p.school_name}</td>
+            <td class="p-3 text-sm">${p.amount}</td>
+            <td class="p-3 text-sm">${new Date(p.received_at).toLocaleString()}</td>
+            <td class="p-3 text-sm"><button data-ref="${p.reference}" class="confirm-pay px-3 py-1 bg-green-600 text-white rounded">Confirm Payment & Activate</button></td>
+          </tr>
+        `).join('');
+
+        document.querySelectorAll('.confirm-pay').forEach(b=>b.addEventListener('click', async ()=>{
+          const ref = b.dataset.ref;
+          if (!confirm('Confirm payment and activate school?')) return;
+          await fetch('/admin/api/payments/confirm', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ reference: ref }) });
+          loadAll();
+        }));
+      }
+
+      async function loadTeachers() {
+        const out = document.getElementById('teachersTable');
+        out.innerHTML = '<tr><td class="p-4 text-sm text-gray-500" colspan="5">Loading…</td></tr>';
+        const data = await fetchJson('/admin/api/teachers/pending');
+        if (!data || !Array.isArray(data)) {
+          out.innerHTML = '<tr><td class="p-4 text-sm text-gray-500" colspan="5">Failed to load.</td></tr>';
+          return;
+        }
+        out.innerHTML = data.map(t=>`
+          <tr>
+            <td class="p-3 text-sm">${t.teacher_name}</td>
+            <td class="p-3 text-sm">${t.school_name}</td>
+            <td class="p-3 text-sm">${new Date(t.submitted_at).toLocaleString()}</td>
+            <td class="p-3 text-sm"><button class="px-2 py-1 bg-gray-100">Preview</button></td>
+            <td class="p-3 text-sm"><button class="px-2 py-1 bg-green-600 text-white">Approve</button></td>
+          </tr>
+        `).join('');
+      }
+
+      async function setupStudentLookup() {
+        const sel = document.getElementById('schoolSelect');
+        const schools = await fetchJson('/admin/api/schools') || [];
+        sel.innerHTML = '<option value="">Select school...</option>' + schools.map(s=>`<option value="${s.id}">${s.name}</option>`).join('');
+
+        document.getElementById('lookupBtn').addEventListener('click', async ()=>{
+          const schoolId = sel.value; const q = document.getElementById('studentQuery').value.trim();
+          if (!schoolId || !q) { alert('Choose school and enter student id/phone'); return; }
+          const r = await fetchJson(`/admin/api/schools/${schoolId}/students/lookup?q=${encodeURIComponent(q)}`);
+          if (!r) { alert('Student not found'); return; }
+          document.getElementById('studentCard').classList.remove('hidden');
+          document.getElementById('studentName').textContent = r.name || '—';
+          document.getElementById('studentMeta').textContent = `${r.id || '—'} • ${r.class || '—'}`;
+          document.getElementById('studentBalance').textContent = r.balance != null ? `ZWL ${r.balance}` : '—';
+          document.getElementById('studentClass').textContent = r.class || '—';
+          document.getElementById('studentPhone').textContent = r.parent_phone || '—';
+        });
+      }
+
+      async function loadAll(){
+        await Promise.allSettled([loadSchools(), loadPayments(), loadTeachers(), setupStudentLookup()]);
+      }
+
+      // init
+      document.addEventListener('DOMContentLoaded', ()=>{
+        showView('schools');
+        loadAll();
+        if (window.lucide) lucide.replace();
+      });
+    </script>
+  </body>
+</html>
